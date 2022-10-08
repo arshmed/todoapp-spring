@@ -15,6 +15,11 @@ public class UserResponse {
     public UserResponse() {
     }
 
+    public UserResponse(String username, String role) {
+        this.username = username;
+        this.role = role;
+    }
+
     public String getUsername() {
         return username;
     }

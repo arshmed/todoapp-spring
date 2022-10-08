@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,16 +51,19 @@ public class UserService {
         return new UserResponse(user);
     }
 
-    public ResponseEntity<UserResponse> addUser(UserCreateRequest request) {
+    public ResponseEntity<UserResponse> addUser(@Valid UserCreateRequest request) {
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles("ROLE_USER");
-        user.setActive(true);
-        UserResponse response = new UserResponse(user);
-        userRepository.save(user);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        if(userRepository.findByUsername(request.getUsername()).isEmpty()) {
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRoles("ROLE_USER");
+            user.setActive(true);
+            UserResponse response = new UserResponse(user);
+            userRepository.save(user);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        else return new ResponseEntity<>(HttpStatus.CONFLICT);
 
     }
 

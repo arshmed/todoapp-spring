@@ -25,6 +25,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/admin")
+    public String homeAdmin(){return ("<h1>Welcome Admin</h1>");}
+
     @GetMapping("/getAllUsers")
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();

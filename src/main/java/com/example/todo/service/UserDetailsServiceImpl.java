@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
-import com.example.todo.model.MyUserDetails;
+import com.example.todo.exception.UserNotFoundException;
+import com.example.todo.model.JwtUserDetails;
 import com.example.todo.model.User;
 import com.example.todo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,22 +13,32 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class MyUSerDetailsService implements UserDetailsService {
-
-
+public class UserDetailsServiceImpl implements UserDetailsService {
+    
     private final UserRepository userRepository;
 
     @Autowired
-    public MyUSerDetailsService(UserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
-        user.orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
-        return user.map(MyUserDetails::new).get();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException(username + " not found"));
+
+        //return user.map(JwtUserDetails::new).get();
+
+        return new JwtUserDetails(user);
+
     }
 
+    public UserDetails loadUserByUserId(Long id) {
 
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new UsernameNotFoundException(id + " not found"));
+        return new JwtUserDetails(user);
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.todo.request;
 
 import com.sun.istack.NotNull;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;

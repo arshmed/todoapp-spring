@@ -19,6 +19,8 @@ public class User {
     @Column(name = "username", unique = true)
     private String username;
 
+    @NotNull
+    @NotEmpty(message = "password may not be empty")
     @Column(name = "password", nullable = false)
     private String password;
 
