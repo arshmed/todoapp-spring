@@ -24,10 +24,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-
-    @JsonIgnore
-    @JoinColumn(name = "todos")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Todo> todos;
 
     private boolean active;

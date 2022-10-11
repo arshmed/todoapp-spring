@@ -8,6 +8,7 @@ import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import com.example.todo.request.TodoCreateRequest;
 import com.example.todo.request.UserCreateRequest;
+import com.example.todo.response.TodoResponse;
 import com.example.todo.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,9 @@ public class UserService {
     private final TodoRepository todoRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private static long numberOfUsers=0;
+    private static long numberOfTodos=0;
+
     @Autowired
     public UserService(UserRepository userRepository, TodoRepository todoRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -47,11 +51,13 @@ public class UserService {
     }
 
     public UserResponse getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+        User user = userRepository.findByUsername(username).orElse(null);
+        if(user!=null)
         return new UserResponse(user);
+        else return null;
     }
 
-    public ResponseEntity<UserResponse> addUser(@Valid UserCreateRequest request) {
+    public UserResponse addUser(UserCreateRequest request) {
 
         if(userRepository.findByUsername(request.getUsername()).isEmpty()) {
             User user = new User();
@@ -61,10 +67,10 @@ public class UserService {
             user.setActive(true);
             UserResponse response = new UserResponse(user);
             userRepository.save(user);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            numberOfUsers++;
+            return response;
         }
-        else return new ResponseEntity<>(HttpStatus.CONFLICT);
-
+        return null;
     }
 
     public UserResponse updateUser(Long userId, UserCreateRequest request) {
@@ -78,6 +84,7 @@ public class UserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         userRepository.delete(user);
+        numberOfUsers--;
     }
 
     public List<Todo> getTodos(Long userId) {
@@ -85,9 +92,9 @@ public class UserService {
         return user.getTodos();
     }
 
-    public ResponseEntity<Todo> addTodo(Long userId, TodoCreateRequest request) {
+    public TodoResponse addTodo(Long userId, TodoCreateRequest request) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found with id: "+userId));
 
         Todo todo = new Todo();
         todo.setUser(user);
@@ -95,23 +102,36 @@ public class UserService {
 
         user.getTodos().add(todo);
         userRepository.save(user);
+        numberOfTodos++;
 
-        return new ResponseEntity<>(todo, HttpStatus.CREATED);
+        return new TodoResponse(todo);
     }
 
     public void deleteTodo(Long todoId) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException(todoId));
         todoRepository.delete(todo);
+        numberOfTodos--;
     }
 
 
-    public ResponseEntity<Todo> updateTodo(Long todoId, TodoCreateRequest request) {
+    public TodoResponse updateTodo(Long todoId, TodoCreateRequest request) {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException(todoId));
 
         todo.setContent(request.getContent());
         todoRepository.save(todo);
 
-        return new ResponseEntity<>(todo, HttpStatus.OK);
+        return new TodoResponse(todo);
+    }
+
+    public TodoResponse toggleTodo(Long todoId) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException(todoId));
+        todo.setCompleted(!todo.isCompleted());
+        todoRepository.save(todo);
+        return new TodoResponse(todo);
+    }
+
+    public static long getNumberOfUsers() {
+        return numberOfUsers;
     }
 }

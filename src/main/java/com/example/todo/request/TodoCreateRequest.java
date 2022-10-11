@@ -10,6 +10,13 @@ public class TodoCreateRequest {
     @NotEmpty(message = "Content may not be empty")
     private String content;
 
+    public TodoCreateRequest() {
+    }
+
+    public TodoCreateRequest(String content){
+        this.content=content;
+    }
+
     public String getContent() {
         return content;
     }
