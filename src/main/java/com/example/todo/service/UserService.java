@@ -11,14 +11,11 @@ import com.example.todo.request.UserCreateRequest;
 import com.example.todo.response.TodoResponse;
 import com.example.todo.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,15 +25,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final TodoRepository todoRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailSenderService emailSenderService;
 
     private static long numberOfUsers=0;
     private static long numberOfTodos=0;
 
     @Autowired
-    public UserService(UserRepository userRepository, TodoRepository todoRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, TodoRepository todoRepository, PasswordEncoder passwordEncoder, EmailSenderService emailSenderService) {
         this.userRepository = userRepository;
         this.todoRepository = todoRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailSenderService = emailSenderService;
     }
 
 
@@ -57,20 +56,23 @@ public class UserService {
         else return null;
     }
 
-    public UserResponse addUser(UserCreateRequest request) {
+    public UserResponse addUser(@Valid @RequestBody UserCreateRequest request) {
 
         if(userRepository.findByUsername(request.getUsername()).isEmpty()) {
             User user = new User();
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setEmail(request.getEmail());
             user.setRoles("ROLE_USER");
             user.setActive(true);
             UserResponse response = new UserResponse(user);
             userRepository.save(user);
             numberOfUsers++;
+            emailSenderService.sendEmail(request.getEmail());
             return response;
         }
-        return null;
+        else
+            return null;
     }
 
     public UserResponse updateUser(Long userId, UserCreateRequest request) {
@@ -134,4 +136,6 @@ public class UserService {
     public static long getNumberOfUsers() {
         return numberOfUsers;
     }
+
+    public static long getNumberOfTodos(){return numberOfTodos;}
 }

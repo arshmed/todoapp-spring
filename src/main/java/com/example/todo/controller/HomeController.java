@@ -2,14 +2,11 @@ package com.example.todo.controller;
 
 import com.example.todo.request.UserCreateRequest;
 import com.example.todo.response.UserResponse;
-import com.example.todo.security.JwtTokenProvider;
+import com.example.todo.service.HomeService;
 import com.example.todo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,13 +16,12 @@ import javax.validation.Valid;
 public class HomeController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final HomeService homeService;
 
-    public HomeController(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    @Autowired
+    public HomeController(UserService userService, HomeService homeService) {
         this.userService = userService;
-        this.authenticationManager=authenticationManager;
-        this.jwtTokenProvider=jwtTokenProvider;
+        this.homeService = homeService;
     }
 
     @GetMapping("/home")
@@ -40,18 +36,8 @@ public class HomeController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserCreateRequest request){
-
-        if(userService.getUserByUsername(request.getUsername()) == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-
-        Authentication auth =  authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        String jwtToken = jwtTokenProvider.generateJwtToken(auth);
-
-        return new ResponseEntity<>("Bearer " + jwtToken, HttpStatus.OK);
+        String token = homeService.login(request);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @GetMapping("/register")
@@ -62,6 +48,8 @@ public class HomeController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserCreateRequest request){
         UserResponse response = userService.addUser(request);
+        if(response == null)
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

@@ -32,6 +32,11 @@ public class AdminController {
         return UserService.getNumberOfUsers();
     }
 
+    @GetMapping("/getNumberOfTodos")
+    public long getNumberOfTodos(){
+        return UserService.getNumberOfTodos();
+    }
+
     @PostMapping("/addUser")
     public ResponseEntity<UserResponse> addUser(@Valid @RequestBody UserCreateRequest request){
         UserResponse response = userService.addUser(request);
