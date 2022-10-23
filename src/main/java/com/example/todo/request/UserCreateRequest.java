@@ -1,5 +1,6 @@
 package com.example.todo.request;
 
+import com.example.todo.model.User;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,7 @@ public class UserCreateRequest {
         this.password = password;
         this.email=email;
     }
+
 
     public UserCreateRequest() {
     }
