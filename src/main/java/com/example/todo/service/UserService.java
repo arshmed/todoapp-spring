@@ -44,9 +44,16 @@ public class UserService {
         return list.stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
+
+
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         return new UserResponse(user);
+    }
+
+    public User getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+        return user;
     }
 
     public UserResponse getUserByUsername(String username) {
@@ -64,15 +71,19 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
             user.setRoles("ROLE_USER");
-            user.setActive(true);
+            user.setActive(false);
             UserResponse response = new UserResponse(user);
             userRepository.save(user);
             numberOfUsers++;
-            emailSenderService.sendEmail(request.getEmail());
+            emailSenderService.sendEmail(user);
             return response;
         }
         else
             return null;
+    }
+
+    public User updateUser(User user){
+        return userRepository.save(user);
     }
 
     public UserResponse updateUser(Long userId, UserCreateRequest request) {

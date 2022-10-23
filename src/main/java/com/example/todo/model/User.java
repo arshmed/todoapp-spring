@@ -1,6 +1,5 @@
 package com.example.todo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
