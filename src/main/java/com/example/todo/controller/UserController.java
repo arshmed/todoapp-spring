@@ -1,18 +1,16 @@
 package com.example.todo.controller;
 
 import com.example.todo.model.Todo;
-import com.example.todo.model.User;
 import com.example.todo.request.TodoCreateRequest;
-import com.example.todo.request.UserCreateRequest;
 import com.example.todo.response.TodoResponse;
 import com.example.todo.response.UserResponse;
 import com.example.todo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,12 +40,10 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
-
     @GetMapping("/getUserTodos/{userId}")
     public List<Todo> getUserTodos(@PathVariable Long userId){
         return userService.getTodos(userId);
     }
-
 
     @PostMapping("/addTodo/{userId}")
     public ResponseEntity<TodoResponse> addTodo(@PathVariable Long userId, @RequestBody TodoCreateRequest request){

@@ -13,7 +13,7 @@ public class UserResponse {
 
     public UserResponse(User user){
         this.username=user.getUsername();
-        this.role= user.getRoles().contains("ROLE_ADMIN") ? "Admin" : "User";
+        this.role= user.getRoles().getRoleName().contains("ROLE_ADMIN") ? "Admin" : "User";
         this.todos=user.getTodos();
     }
 

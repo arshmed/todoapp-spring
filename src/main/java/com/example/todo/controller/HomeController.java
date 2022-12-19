@@ -7,12 +7,14 @@ import com.example.todo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
 public class HomeController {
 
     private final UserService userService;
@@ -24,29 +26,31 @@ public class HomeController {
         this.homeService = homeService;
     }
 
-    @GetMapping("/home")
+
+    @GetMapping
     public String home(){
         return ("<h1>Welcome</h1>");
     }
 
-    @GetMapping("/login")
-    public String login(){
-        return "Login Page";
-    }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<String> login(@RequestBody UserCreateRequest request){
         String token = homeService.login(request);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    @GetMapping("/register")
+    @GetMapping("/auth/register")
     public String homeRegister(){
         return ("<h1>For registration click the button</h1>");
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserCreateRequest request){
+    @PostMapping("/auth/register")
+    public ResponseEntity<Object> register(@Valid @RequestBody UserCreateRequest request, Errors errors){
+        // TODO: 23.10.2022
+                // set error messages, create a class and collect all errors.
+        if(errors.hasErrors()){
+            return new ResponseEntity<>(errors.getAllErrors(), HttpStatus.EXPECTATION_FAILED);
+        }
         UserResponse response = userService.addUser(request);
         if(response == null)
             return new ResponseEntity<>(HttpStatus.CONFLICT);

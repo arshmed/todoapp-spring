@@ -1,6 +1,5 @@
 package com.example.todo.request;
 
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 

@@ -1,11 +1,9 @@
 package com.example.todo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -21,9 +19,7 @@ public class User {
     @Column(name = "username", unique = true)
     private String username;
 
-    @NotNull
-    @NotEmpty(message = "password may not be empty")
-    @Size(min = 5, max = 20)
+
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -33,10 +29,9 @@ public class User {
     private boolean active;
     // TODO: 16.10.2022
     //  add roles with enumerated type
-    private String roles;
+    @Enumerated(EnumType.STRING)
+    private Roles roles;
 
-    @Email(message = "Email should be valid")
-    @NotNull
     @Column(name = "mail" , nullable = false)
     private String email;
 
@@ -67,11 +62,11 @@ public class User {
         this.active = active;
     }
 
-    public String getRoles() {
+    public Roles getRoles() {
         return roles;
     }
 
-    public void setRoles(String roles) {
+    public void setRoles(Roles roles) {
         this.roles = roles;
     }
 

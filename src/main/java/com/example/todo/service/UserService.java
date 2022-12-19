@@ -2,6 +2,7 @@ package com.example.todo.service;
 
 import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.exception.UserNotFoundException;
+import com.example.todo.model.Roles;
 import com.example.todo.model.Todo;
 import com.example.todo.model.User;
 import com.example.todo.repository.TodoRepository;
@@ -63,13 +64,17 @@ public class UserService {
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
-            user.setRoles("ROLE_USER");
+            user.setRoles(Roles.USER);
             user.setActive(true);
             UserResponse response = new UserResponse(user);
             userRepository.save(user);
             numberOfUsers++;
             emailSenderService.sendEmail(request.getEmail());
             return response;
+            // TODO: 16.10.2022
+                //string mesaj dönülsün.
+            // TODO: 16.10.2022
+                // register olan kullanıcıya otomatik giriş izni verilsin.
         }
         else
             return null;

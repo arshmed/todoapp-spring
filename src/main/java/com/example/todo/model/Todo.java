@@ -18,6 +18,7 @@ public class Todo {
     @Column(name = "content")
     private String content;
 
+    @Column(name="completed")
     private boolean completed = Boolean.FALSE;
 
     @JsonIgnore
