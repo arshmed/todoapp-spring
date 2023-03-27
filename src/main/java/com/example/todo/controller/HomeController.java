@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class HomeController {
@@ -49,11 +47,12 @@ public class HomeController {
         // TODO: 23.10.2022
                 // set error messages, create a class and collect all errors.
         if(errors.hasErrors()){
-            return new ResponseEntity<>(errors.getAllErrors(), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(errors.getFieldError().getDefaultMessage(), HttpStatus.EXPECTATION_FAILED);
         }
         UserResponse response = userService.addUser(request);
         if(response == null)
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        else
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class EmailSenderService {
 
     private final String subject = "WELCOME!";
-    private final String text = "WELCOME TO TODO APP!\nYou can put your plans there and you will not forget anything!";
+    private final String text = "WELCOME TO TODO APP!\n\nYou can put your plans here and you will not forget anything!";
 
     @Autowired
     private JavaMailSender mailSender;
