@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-/src/main/resources/application.properties
+/Users/muhammed/IdeaProjects/spring-projects/todo/todo/src/main/resources/application.properties
